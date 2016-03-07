@@ -1,7 +1,9 @@
 # XssPy
 
-XssPy - Finding XSS made easy
+XssPy - Finding XSS made easier
+
 Author: Faizan Ahmad (A tool by Fsecurify)
+
 Usage: XssPy.py website.com (Do not write www.website.com OR http://www.website.com)
 
 Description: XssPy is a python tool for finding Cross Site Scripting 
