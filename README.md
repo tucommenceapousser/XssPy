@@ -12,4 +12,4 @@ After that, it starts scanning each and every input on each and every
  page that it found while its traversal. It uses small yet effective
 payloads to search for XSS vulnerabilities. 
 
-With this tool, Cross Site Scripting vulnerabilities have been found in the websites of MIT, Stanford, Duke University, Informatica, Formassembly, ActiveCompaign, Volcanicpixels, Oxford, Motorola, Berkeyley and many more.
+With this tool, Cross Site Scripting vulnerabilities have been found in the websites of MIT, Stanford, Duke University, Informatica, Formassembly, ActiveCompaign, Volcanicpixels, Oxford, Motorola, Berkeley and many more.
