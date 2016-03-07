@@ -18,7 +18,7 @@ print color.BOLD + color.RED + """
 
 XssPy - Finding XSS made easier
 Author: Faizan Ahmad (Fsecurify)
-Email: faizann288@gmail.com
+Email: fsecurify@gmail.com
 Usage: pythonXssPy.py website.com (Do not write www.website.com OR http://www.website.com)
 Comprehensive Scan: python XssPy.py website.com -e
 
