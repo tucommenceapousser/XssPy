@@ -20,7 +20,9 @@ The tool has been tested parallel with paid Vulnerability Scanners and most of t
 With this tool, Cross Site Scripting vulnerabilities have been found in the websites of MIT, Stanford, Duke University, Informatica, Formassembly, ActiveCompaign, Volcanicpixels, Oxford, Motorola, Berkeley and many more.
 
 Installation: Type the following in the terminal.
+
 git clone https://github.com/faizann24/XssPy/ /opt/xsspy
+
 
 NOTE: Do mail me if you encounter any errors. (fsecurify@gmail.com)
 
