@@ -63,7 +63,7 @@ def initializeAndFind(firstDomains):
 			url = "http://www." + str(url)
 			try:
 				br.open(url)
-				print "Finding all the links of the website" + str(url)
+				print "Finding all the links of the website " + str(url)
 				try:
 					for link in br.links():		#finding the links of the website
 						if smallurl in str(link.absolute_url):
