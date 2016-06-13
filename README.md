@@ -1,6 +1,8 @@
 # XssPy - Web Application XSS Scanner
+A tool by Fsecurify
 
-Author: Faizan Ahmad (A tool by Fsecurify)
+Author: Faizan Ahmad 
+https://pk.linkedin.com/in/faizan-ahmad-015964118
 
 Link: http://fsecurify.com/xsspy-web-application-xss-scanner/
 
