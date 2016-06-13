@@ -4,7 +4,7 @@ XssPy - Finding XSS made easier
 
 Author: Faizan Ahmad (A tool by Fsecurify)
 
-Link: https://www.facebook.com/fsecurify
+Link: http://fsecurify.com/xsspy-web-application-xss-scanner/
 
 Usage: XssPy.py website.com (Do not write www.website.com OR http://www.website.com)
 
