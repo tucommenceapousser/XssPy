@@ -1,6 +1,4 @@
-# XssPy - a tool by Fsecurify
-
-XssPy - Finding XSS made easier
+# XssPy - Web Application XSS Scanner
 
 Author: Faizan Ahmad (A tool by Fsecurify)
 
@@ -23,7 +21,10 @@ Installation: Type the following in the terminal.
 
 git clone https://github.com/faizann24/XssPy/ /opt/xsspy
 
+The tool works on Python 2.7 and you should have mechanize installed. If mechanize is not installed, type "pip install mechanize" in the terminal. 
 
-NOTE: Do mail me if you encounter any errors. (fsecurify@gmail.com)
+
+#NOTE: 
+Mail me if you encounter any errors (fsecurify@gmail.com). You can also post your problems on the website. I'll try my best to respond as soon as possible.
 
 Best Regards
