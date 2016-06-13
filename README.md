@@ -4,7 +4,8 @@ A tool by Fsecurify
 Author: Faizan Ahmad 
 https://pk.linkedin.com/in/faizan-ahmad-015964118
 
-Link: http://fsecurify.com/xsspy-web-application-xss-scanner/
+#Link: 
+http://fsecurify.com/xsspy-web-application-xss-scanner/
 
 #Installation: 
 Type the following in the terminal.
