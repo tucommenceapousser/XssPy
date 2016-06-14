@@ -19,9 +19,8 @@ python XssPy.py website.com (Do not write www.website.com OR http://www.website.
 
 #Payloads
 If you have found a XSS vulnerability, you can try the following payloads.
-1) <script>alert(1)</script>
-2) <svg onload=confirm(1)>
-3) <img src=x onerror="alert(1)">
+<script>confirm(1)</script>
+<svg onload=confirm(1)>
 
 #Description: 
 XssPy is a python tool for finding Cross Site Scripting vulnerabilities in websites. This tool is the first of its kind. Instead of just checking one page as most of the tools do, this tool traverses the website and find all the links and subdomains first. After that, it starts scanning each and every input on each and every page that it found while its traversal. It uses small yet effective payloads to search for XSS vulnerabilities. 
