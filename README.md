@@ -19,7 +19,7 @@ python XssPy.py website.com (Do not write www.website.com OR http://www.website.
 
 #Payloads
 If you have found a XSS vulnerability, you can try the following payloads.
-<script>confirm(1)</script>
+<code><script>confirm(1)</script></code>
 <svg onload=confirm(1)>
 
 #Description: 
