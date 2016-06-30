@@ -1,5 +1,7 @@
 import mechanize
 import sys
+import httplib
+from urlparse import urlparse
 
 br = mechanize.Browser()	#initiating the browser
 br.addheaders = [('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11)Gecko/20071127 Firefox/2.0.0.11')]
@@ -60,7 +62,22 @@ def initializeAndFind(firstDomains):
 		for url in allURLS:
 			x = str(url)
 			smallurl = x
-			url = "http://www." + str(url)
+
+			try:	# Test HTTPS/HTTP compatibility. Prefers HTTPS but defaults to HTTP if any errors are encountered
+				test = httplib.HTTPSConnection(smallurl)
+				test.request("GET", "/")
+				response = test.getresponse()
+				print response.status
+				if (response.status == 200) | (response.status == 302):
+					url = "https://www." + str(url)
+				elif response.status == 301:
+					loc = response.getheader('Location')
+					url = loc.scheme + '://' + loc.netloc
+				else:
+					url = "http://www." + str(url)
+			except:
+					url = "http://www." + str(url)
+
 			try:
 				br.open(url)
 				print "Finding all the links of the website " + str(url)
