@@ -141,7 +141,7 @@ def findxss(firstDomains):
 								dummyVar = 0
 							try:
 								if '<svg "ons>' in br.response().read():	#if payload is found in response, we have XSS
-									print "\n\nXss found and the link is" + str(link) + " And the payload is <svg \"ons>" + "\n\n"
+									print "\n\nXss found and the link is " + str(link) + " And the payload is <svg \"ons>" + "\n\n"
 									xssLinks.append(link)
 								else:
 									dummyVar = 0
@@ -164,7 +164,7 @@ def findxss(firstDomains):
 								dummyVar = 0
 							try:
 								if '<a href="javascript:alert(1)' in br.response().read():
-									print "\n\nXss found and the link is" + str(link) + " And the payload is javascript:alert(1)" + "\n\n"
+									print "\n\nXss found and the link is " + str(link) + " And the payload is javascript:alert(1)" + "\n\n"
 									xssLinks.append(link)
 								else:
 									dummyVar = 0
