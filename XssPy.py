@@ -10,6 +10,8 @@ br.addheaders = [('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv
 br.set_handle_robots(False)
 br.set_handle_refresh(False)
 
+payloads = ['<svg "ons>', '" onfocus="alert(1);', 'javascript:alert(1)']
+blacklist = ['.png', '.jpg', '.jpeg', '.mp3', '.mp4', '.avi', '.gif', '.svg', '.pdf']
 
 class color:
    RED = '\033[91m'
@@ -27,6 +29,7 @@ Author: Faizan Ahmad (Fsecurify)
 Email: fsecurify@gmail.com
 Usage: pythonXssPy.py website.com (Do not write www.website.com OR http://www.website.com)
 Comprehensive Scan: python XssPy.py website.com -e
+Verbose logging: python XssPy.py website.com -v
 
 Description: XssPy is a python tool for finding Cross Site Scripting 
 vulnerabilities in websites. This tool is the first of its kind.
@@ -53,17 +56,24 @@ results = parser.parse_args()
 
 logger.setLevel(logging.DEBUG if results.verbose else logging.INFO)
 
+def testPayload(payload, p, link):
+	br.form[str(p.name)] = payload
+	br.submit()
+	if payload in br.response().read():	#if payload is found in response, we have XSS
+		color.log(logging.INFO, color.BOLD+color.GREEN, 'Xss found and the link is %s And the payload is %s' % (str(link), payload))
+		xssLinks.append(link)
+	br.back()
+
 def initializeAndFind():
 
 	if not results.url:	#if the url has been passed or not
 	    color.log(logging.INFO, color.GREEN, 'Url not provided correctly')
-	    return
+	    return []
 	
 	firstDomains = []	#list of domains
 	allURLS = []
 	allURLS.append(results.url)	#just one url at the moment
 	largeNumberOfUrls = []	#in case one wants to do comprehensive search
-
 
 	color.log(logging.INFO, color.GREEN, 'Doing a short traversal.')	#doing a short traversal if no command line argument is being passed
 	for url in allURLS:
@@ -87,22 +97,22 @@ def initializeAndFind():
 			for link in br.links():		#finding the links of the website
 				if smallurl in str(link.absolute_url):
 					firstDomains.append(str(link.absolute_url))
-					firstDomains = list(set(firstDomains))
+			firstDomains = list(set(firstDomains))
 		except:
 			pass
-	color.log(logging.INFO, color.GREEN, 'Number of links to test are: ' + str(len(firstDomains)))
-	if results.compOn:
-		color.log(logging.INFO, color.GREEN, 'Doing a comprehensive traversal. This could take a while')
-		for link in firstDomains:
-			try:
-				br.open(link)
-				for newlink in br.links():	#going deeper into each link and finding its links
-					if url in str(newlink.absolute_url):
-						largeNumberOfUrls.append(newlink.absolute_url)
-			except:
-				pass
-		firstDomains = list(set(firstDomains + largeNumberOfUrls))
-		color.log(logging.INFO, color.GREEN, 'Total Number of links to test have become: ' + str(len(firstDomains)))	#all links have been found
+		color.log(logging.INFO, color.GREEN, 'Number of links to test are: ' + str(len(firstDomains)))
+		if results.compOn:
+			color.log(logging.INFO, color.GREEN, 'Doing a comprehensive traversal. This could take a while')
+			for link in firstDomains:
+				try:
+					br.open(link)
+					for newlink in br.links():	#going deeper into each link and finding its links
+						if smallurl in str(newlink.absolute_url):
+							largeNumberOfUrls.append(newlink.absolute_url)
+				except:
+					pass
+			firstDomains = list(set(firstDomains + largeNumberOfUrls))
+			color.log(logging.INFO, color.GREEN, 'Total Number of links to test have become: ' + str(len(firstDomains)))	#all links have been found
 	return firstDomains
 
 
@@ -111,13 +121,15 @@ def findxss(firstDomains):
 	xssLinks = []			#TOTAL CROSS SITE SCRIPTING FINDINGS
 	if firstDomains:	#if there is atleast one link
 		for link in firstDomains:
+			blacklisted = False
 			y = str(link)
 			color.log(logging.DEBUG, color.YELLOW, str(link))
-			if 'jpg' in y:		#just a small check
-				color.log(logging.DEBUG, color.RED, '\tNot a good url to test')
-			elif 'pdf' in y:
-				color.log(logging.DEBUG, color.RED, '\tNot a good url to test')
-			else:
+			for ext in blacklist:
+				if ext in y:
+					color.log(logging.DEBUG, color.RED, '\tNot a good url to test')
+					blacklisted = True
+					break
+			if not blacklisted:
 				try:	
 					br.open(str(link))	#open the link
 					if br.forms():		#if a form exists, submit it
@@ -127,20 +139,8 @@ def findxss(firstDomains):
 							par = str(p)
 							if 'TextControl' in par:		#submit only those forms which require text
 								color.log(logging.DEBUG, color.YELLOW, '\tParam: ' + str(p.name))
-								br.form[str(p.name)] = '<svg "ons>'		#our payload
-								br.submit()
-								if '<svg "ons>' in br.response().read():	#if payload is found in response, we have XSS
-									color.log(logging.INFO, color.BOLD+color.GREEN, 'Xss found and the link is ' + str(link) + ' And the payload is <svg \"ons>')
-									xssLinks.append(link)
-								br.back()
-								#SECOND PAYLOAD
-								br.form[str(p.name)] = 'javascript:alert(1)'	#second payload
-								br.submit()
-								if '<a href="javascript:alert(1)' in br.response().read():
-									color.log(logging.INFO, 'Xss found and the link is ' + str(link) + ' And the payload is javascript:alert(1)')
-									xssLinks.append(link)
-									br.back()
-						count = 0
+								for item in payloads:
+									testPayload(item, p, link)
 				except:
 					pass
 		color.log(logging.DEBUG, color.GREEN+color.BOLD, 'The following links are vulnerable: ')
