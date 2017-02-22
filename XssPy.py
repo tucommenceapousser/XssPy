@@ -2,6 +2,7 @@ import mechanize
 import sys
 import httplib
 import argparse
+import logging
 from urlparse import urlparse
 
 br = mechanize.Browser()	#initiating the browser
@@ -12,13 +13,15 @@ br.set_handle_refresh(False)
 
 class color:
    RED = '\033[91m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
    BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
    END = '\033[0m'
-
+   @staticmethod
+   def log(lvl, col, msg):
+       logger.log(lvl, col + msg + color.END)
 
 print color.BOLD + color.RED + """
-
 XssPy - Finding XSS made easier
 Author: Faizan Ahmad (Fsecurify)
 Email: fsecurify@gmail.com
@@ -36,17 +39,26 @@ profile websites and educational institutes has been found
 by using this very tool.
 """ + color.END
 
+logger = logging.getLogger(__name__)
+lh = logging.StreamHandler()  # Handler for the logger
+logger.addHandler(lh)
+formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%H:%M:%S')
+lh.setFormatter(formatter)
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-u', action='store', dest='url', help='The URL to analyze')
 parser.add_argument('-e', action='store_true', dest='compOn', help='Enable comprehensive scan')
+parser.add_argument('-v', action='store_true', dest='verbose', help='Enable verbose logging')
 results = parser.parse_args()
+
+logger.setLevel(logging.DEBUG if results.verbose else logging.INFO)
 
 def initializeAndFind(firstDomains):
 
 	dummy = 0	#dummy variable for doing nothing
 	firstDomains = []	#list of domains
 	if not results.url:	#if the url has been passed or not
-	    print "Url not provided correctly"
+	    color.log(logging.INFO, color.GREEN, 'Url not provided correctly')
 	    return 0
 	
 	smallurl = results.url	#small url is the part of url without http and www
@@ -55,7 +67,7 @@ def initializeAndFind(firstDomains):
 	allURLS.append(smallurl)	#just one url at the moment
 	largeNumberOfUrls = []	#in case one wants to do comprehensive search
 
-        print "Doing a short traversal."	#doing a short traversal if no command line argument is being passed
+        color.log(logging.INFO, color.GREEN, 'Doing a short traversal.')	#doing a short traversal if no command line argument is being passed
         for url in allURLS:
                 x = str(url)
                 smallurl = x
@@ -64,7 +76,6 @@ def initializeAndFind(firstDomains):
                         test = httplib.HTTPSConnection(smallurl)
                         test.request("GET", "/")
                         response = test.getresponse()
-                        print response.status
                         if (response.status == 200) | (response.status == 302):
                                 url = "https://www." + str(url)
                         elif response.status == 301:
@@ -77,7 +88,7 @@ def initializeAndFind(firstDomains):
 
                 try:
                         br.open(url)
-                        print "Finding all the links of the website " + str(url)
+                        color.log(logging.INFO, color.GREEN, 'Finding all the links of the website ' + str(url))
                         try:
                                 for link in br.links():		#finding the links of the website
                                         if smallurl in str(link.absolute_url):
@@ -87,10 +98,10 @@ def initializeAndFind(firstDomains):
                                 dummy = 0
                 except:
                         dummy = 0
-        print "Number of links to test are: " + str(len(firstDomains))
+        color.log(logging.INFO, color.GREEN, 'Number of links to test are: ' + str(len(firstDomains)))
 		
 	if results.compOn:
-                print "Doing a comprehensive traversal. This could take a while."
+                color.log(logging.INFO, color.GREEN, 'Doing a comprehensive traversal. This could take a while')
                 for link in firstDomains:
                         try:
                                 br.open(link)
@@ -104,23 +115,23 @@ def initializeAndFind(firstDomains):
                                 dummy = 0
 
                 firstDomains = list(set(firstDomains + largeNumberOfUrls))
-                print "Total Number of links to test have become: " + str(len(firstDomains))	#all links have been found
+                color.log(logging.INFO, color.GREEN, 'Total Number of links to test have become: ' + str(len(firstDomains)))	#all links have been found
 	return firstDomains
 
 
 def findxss(firstDomains):
-	print "Started finding XSS"	#starting finding XSS
+	color.log(logging.INFO, color.GREEN, 'Started finding XSS')	#starting finding XSS
 	xssLinks = []			#TOTAL CROSS SITE SCRIPTING FINDINGS
 	count = 0			#to check for forms
 	dummyVar = 0			#dummy variable for doing nothing
 	if len(firstDomains) > 0:	#if there is atleast one link
 		for link in firstDomains:
 			y = str(link)
-			print str(link)
+			color.log(logging.DEBUG, color.YELLOW, str(link))
 			if 'jpg' in y:		#just a small check
-				print "Not a good url to test"
+				color.log(logging.DEBUG, color.RED, '\tNot a good url to test')
 			elif 'pdf' in y:
-				print "Not a good url to test"
+				color.log(logging.DEBUG, color.RED, '\tNot a good url to test')
 			else:
 				try:
 					br.open(str(link))	#open the link
@@ -143,55 +154,56 @@ def findxss(firstDomains):
 					for p in params.controls:
 						par = str(p)
 						if 'TextControl' in par:		#submit only those forms which require text
-							print str(p.name)
-							try:
-								br.form[str(p.name)] = '<svg "ons>'		#our payload
-							except:
-								dummyVar = 0
-							try:
-								br.submit()
-							except:
-								dummyVar = 0
-							try:
-								if '<svg "ons>' in br.response().read():	#if payload is found in response, we have XSS
-									print "\n\nXss found and the link is " + str(link) + " And the payload is <svg \"ons>" + "\n\n"
-									xssLinks.append(link)
-								else:
-									dummyVar = 0
-							except:
-								print "could not read the page"
-							try:
-								br.back()
-							except:
-								dummyVar = 0
+                                                    color.log(logging.DEBUG, color.YELLOW, '\tParam: ' + str(p.name))
+                                                    try:
+                                                            br.form[str(p.name)] = '<svg "ons>'		#our payload
+                                                    except:
+                                                            dummyVar = 0
+                                                    try:
+                                                            br.submit()
+                                                    except:
+                                                            dummyVar = 0
+                                                    try:
+                                                            if '<svg "ons>' in br.response().read():	#if payload is found in response, we have XSS
+                                                                    color.log(logging.INFO, color.BOLD+color.GREEN, 'Xss found and the link is ' + str(link) + ' And the payload is <svg \"ons>')
+                                                                    xssLinks.append(link)
+                                                            else:
+                                                                    dummyVar = 0
+                                                    except:
+                                                            color.log(logging.INFO, color.RED, '\tcould not read the page')
+                                                    try:
+                                                            br.back()
+                                                    except:
+                                                            dummyVar = 0
 
-							#SECOND PAYLOAD
+                                                    #SECOND PAYLOAD
 
-							try:
-								br.form[str(p.name)] = 'javascript:alert(1)'	#second payload
-							except:
-								dummyVar = 0
-							try:
-								br.submit()
-							except:
-								dummyVar = 0
-							try:
-								if '<a href="javascript:alert(1)' in br.response().read():
-									print "\n\nXss found and the link is " + str(link) + " And the payload is javascript:alert(1)" + "\n\n"
-									xssLinks.append(link)
-								else:
-									dummyVar = 0
-							except:
-								print "Could not read a page"
-							try:
-								br.back()		#go back to the previous page
-							except:
-								dummyVar = 0
-					count = 0
-		for link in xssLinks:		#print all xss findings
-			print link
+                                                    try:
+                                                            br.form[str(p.name)] = 'javascript:alert(1)'	#second payload
+                                                    except:
+                                                            dummyVar = 0
+                                                    try:
+                                                            br.submit()
+                                                    except:
+                                                            dummyVar = 0
+                                                    try:
+                                                            if '<a href="javascript:alert(1)' in br.response().read():
+                                                                    color.log(logging.INFO, 'Xss found and the link is ' + str(link) + ' And the payload is javascript:alert(1)')
+                                                                    xssLinks.append(link)
+                                                            else:
+                                                                    dummyVar = 0
+                                                    except:
+                                                            color.log(logging.INFO, color.RED, '\tCould not read a page')
+                                                    try:
+                                                            br.back()		#go back to the previous page
+                                                    except:
+                                                            dummyVar = 0
+                                                count = 0
+                color.log(logging.DEBUG, color.GREEN+color.BOLD, 'The following links are vulnerable: ')
+                for link in xssLinks:		#print all xss findings
+			color.log(logging.DEBUG, color.GREEN, '\t'+link)
 	else:
-		print "No link found, exiting"
+		color.log(logging.INFO, color.RED+color.BOLD, '\tNo link found, exiting')
 
 #calling the function
 firstDomains = []
