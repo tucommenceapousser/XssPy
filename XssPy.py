@@ -12,6 +12,7 @@ br.set_handle_refresh(False)
 
 payloads = ['<svg "ons>', '" onfocus="alert(1);', 'javascript:alert(1)']
 blacklist = ['.png', '.jpg', '.jpeg', '.mp3', '.mp4', '.avi', '.gif', '.svg', '.pdf']
+xssLinks = []			#TOTAL CROSS SITE SCRIPTING FINDINGS
 
 class color:
    BLUE = '\033[94m'
@@ -63,8 +64,10 @@ def testPayload(payload, p, link):
 	br.form[str(p.name)] = payload
 	br.submit()
 	if payload in br.response().read():	#if payload is found in response, we have XSS
-		color.log(logging.INFO, color.BOLD+color.GREEN, 'Xss found and the link is %s And the payload is %s' % (str(link), payload))
-		xssLinks.append(link)
+		color.log(logging.DEBUG, color.BOLD+color.GREEN, 'XSS found!')
+		report = 'Link: %s, Payload: %s, Element: %s' % (str(link), payload, str(p.name))
+		color.log(logging.INFO, color.BOLD+color.GREEN, report)
+		xssLinks.append(report)
 	br.back()
 
 def initializeAndFind():
@@ -125,7 +128,6 @@ def initializeAndFind():
 
 def findxss(firstDomains):
 	color.log(logging.INFO, color.GREEN, 'Started finding XSS')	#starting finding XSS
-	xssLinks = []			#TOTAL CROSS SITE SCRIPTING FINDINGS
 	if firstDomains:	#if there is atleast one link
 		for link in firstDomains:
 			blacklisted = False
