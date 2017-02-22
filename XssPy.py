@@ -1,6 +1,7 @@
 import mechanize
 import sys
 import httplib
+import argparse
 from urlparse import urlparse
 
 br = mechanize.Browser()	#initiating the browser
@@ -35,81 +36,76 @@ profile websites and educational institutes has been found
 by using this very tool.
 """ + color.END
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-u', action='store', dest='url', help='The URL to analyze')
+parser.add_argument('-e', action='store_true', dest='compOn', help='Enable comprehensive scan')
+results = parser.parse_args()
 
 def initializeAndFind(firstDomains):
 
 	dummy = 0	#dummy variable for doing nothing
 	firstDomains = []	#list of domains
-	if len(sys.argv) >=2:	#if the url has been passed or not
-		url = sys.argv[1]
-	else:
-		print "Url not provided correctly"
-		return 0
+	if not results.url:	#if the url has been passed or not
+	    print "Url not provided correctly"
+	    return 0
 	
-	smallurl = sys.argv[1]	#small url is the part of url without http and www
+	smallurl = results.url	#small url is the part of url without http and www
 
 	allURLS = []
-	allURLS.append(url)	#just one url at the moment
+	allURLS.append(smallurl)	#just one url at the moment
 	largeNumberOfUrls = []	#in case one wants to do comprehensive search
 
-	noSecondParameter = 0
-	if len(sys.argv) < 3:
-		noSecondParameter = 0
-	else:
-		noSecondParameter = 1
-	if sys.argv[1]:
-		print "Doing a short traversal."	#doing a short traversal if no command line argument is being passed
-		for url in allURLS:
-			x = str(url)
-			smallurl = x
+        print "Doing a short traversal."	#doing a short traversal if no command line argument is being passed
+        for url in allURLS:
+                x = str(url)
+                smallurl = x
 
-			try:	# Test HTTPS/HTTP compatibility. Prefers HTTPS but defaults to HTTP if any errors are encountered
-				test = httplib.HTTPSConnection(smallurl)
-				test.request("GET", "/")
-				response = test.getresponse()
-				print response.status
-				if (response.status == 200) | (response.status == 302):
-					url = "https://www." + str(url)
-				elif response.status == 301:
-					loc = response.getheader('Location')
-					url = loc.scheme + '://' + loc.netloc
-				else:
-					url = "http://www." + str(url)
-			except:
-					url = "http://www." + str(url)
+                try:	# Test HTTPS/HTTP compatibility. Prefers HTTPS but defaults to HTTP if any errors are encountered
+                        test = httplib.HTTPSConnection(smallurl)
+                        test.request("GET", "/")
+                        response = test.getresponse()
+                        print response.status
+                        if (response.status == 200) | (response.status == 302):
+                                url = "https://www." + str(url)
+                        elif response.status == 301:
+                                loc = response.getheader('Location')
+                                url = loc.scheme + '://' + loc.netloc
+                        else:
+                                url = "http://www." + str(url)
+                except:
+                                url = "http://www." + str(url)
 
-			try:
-				br.open(url)
-				print "Finding all the links of the website " + str(url)
-				try:
-					for link in br.links():		#finding the links of the website
-						if smallurl in str(link.absolute_url):
-							firstDomains.append(str(link.absolute_url))
-					firstDomains = list(set(firstDomains))
-				except:
-					dummy = 0
-			except:
-				dummy = 0
-		print "Number of links to test are: " + str(len(firstDomains))
+                try:
+                        br.open(url)
+                        print "Finding all the links of the website " + str(url)
+                        try:
+                                for link in br.links():		#finding the links of the website
+                                        if smallurl in str(link.absolute_url):
+                                                firstDomains.append(str(link.absolute_url))
+                                firstDomains = list(set(firstDomains))
+                        except:
+                                dummy = 0
+                except:
+                        dummy = 0
+        print "Number of links to test are: " + str(len(firstDomains))
 		
-	if noSecondParameter != 0:
-		if(sys.argv[2] == "-e"):		#if we want to do comprehensive traversal, we pass -e as command line argument
-			print "Doing a comprehensive traversal. This could take a while."
-			for link in firstDomains:
-				try:
-					br.open(link)
-					try:
-						for newlink in br.links():	#going deeper into each link and finding its links
-							if smallurl in str(newlink.absolute_url):
-								largeNumberOfUrls.append(newlink.absolute_url)
-					except:
-						dummy = 0
-				except:
-					dummy = 0
-	
-			firstDomains = list(set(firstDomains + largeNumberOfUrls))
-			print "Total Number of links to test have become: " + str(len(firstDomains))	#all links have been found
-	return firstDomains
+	if results.compOn:
+                print "Doing a comprehensive traversal. This could take a while."
+                for link in firstDomains:
+                        try:
+                                br.open(link)
+                                try:
+                                        for newlink in br.links():	#going deeper into each link and finding its links
+                                                if smallurl in str(newlink.absolute_url):
+                                                        largeNumberOfUrls.append(newlink.absolute_url)
+                                except:
+                                        dummy = 0
+                        except:
+                                dummy = 0
+
+                firstDomains = list(set(firstDomains + largeNumberOfUrls))
+                print "Total Number of links to test have become: " + str(len(firstDomains))	#all links have been found
+        return firstDomains
 
 
 def findxss(firstDomains):
