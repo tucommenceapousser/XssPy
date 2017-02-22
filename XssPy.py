@@ -105,7 +105,7 @@ def initializeAndFind(firstDomains):
 
                 firstDomains = list(set(firstDomains + largeNumberOfUrls))
                 print "Total Number of links to test have become: " + str(len(firstDomains))	#all links have been found
-    return firstDomains
+	return firstDomains
 
 
 def findxss(firstDomains):
