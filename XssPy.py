@@ -100,7 +100,7 @@ def initializeAndFind():
 		try:
 			br.open(url)
 			for cookie in results.cookies:
-				color.log(logging.DEBUG, color.BLUE, 'Adding cookie: %s' % cookie)
+				color.log(logging.INFO, color.BLUE, 'Adding cookie: %s' % cookie)
 				br.set_cookie(cookie)
 			br.open(url)
 			color.log(logging.INFO, color.GREEN, 'Finding all the links of the website ' + str(url))
