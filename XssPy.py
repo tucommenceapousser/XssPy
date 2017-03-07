@@ -12,8 +12,10 @@ br.set_handle_refresh(False)
 
 payloads = ['<svg "ons>', '" onfocus="alert(1);', 'javascript:alert(1)']
 blacklist = ['.png', '.jpg', '.jpeg', '.mp3', '.mp4', '.avi', '.gif', '.svg', '.pdf']
+xssLinks = []			#TOTAL CROSS SITE SCRIPTING FINDINGS
 
 class color:
+   BLUE = '\033[94m'
    RED = '\033[91m'
    GREEN = '\033[92m'
    YELLOW = '\033[93m'
@@ -28,8 +30,9 @@ XssPy - Finding XSS made easier
 Author: Faizan Ahmad (Fsecurify)
 Email: fsecurify@gmail.com
 Usage: pythonXssPy.py website.com (Do not write www.website.com OR http://www.website.com)
-Comprehensive Scan: python XssPy.py website.com -e
-Verbose logging: python XssPy.py website.com -v
+Comprehensive Scan: python XssPy.py -u website.com -e
+Verbose logging: python XssPy.py -u website.com -v
+Cookies: python XssPy.py -u website.complex -c name=val name=val
 
 Description: XssPy is a python tool for finding Cross Site Scripting 
 vulnerabilities in websites. This tool is the first of its kind.
@@ -52,6 +55,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-u', action='store', dest='url', help='The URL to analyze')
 parser.add_argument('-e', action='store_true', dest='compOn', help='Enable comprehensive scan')
 parser.add_argument('-v', action='store_true', dest='verbose', help='Enable verbose logging')
+parser.add_argument('-c', action='store', dest='cookies', help='Space separated list of cookies', nargs='+', default=[])
 results = parser.parse_args()
 
 logger.setLevel(logging.DEBUG if results.verbose else logging.INFO)
@@ -60,8 +64,10 @@ def testPayload(payload, p, link):
 	br.form[str(p.name)] = payload
 	br.submit()
 	if payload in br.response().read():	#if payload is found in response, we have XSS
-		color.log(logging.INFO, color.BOLD+color.GREEN, 'Xss found and the link is %s And the payload is %s' % (str(link), payload))
-		xssLinks.append(link)
+		color.log(logging.DEBUG, color.BOLD+color.GREEN, 'XSS found!')
+		report = 'Link: %s, Payload: %s, Element: %s' % (str(link), payload, str(p.name))
+		color.log(logging.INFO, color.BOLD+color.GREEN, report)
+		xssLinks.append(report)
 	br.back()
 
 def initializeAndFind():
@@ -93,6 +99,10 @@ def initializeAndFind():
 				url = "http://www." + str(url)
 		try:
 			br.open(url)
+			for cookie in results.cookies:
+				color.log(logging.INFO, color.BLUE, 'Adding cookie: %s' % cookie)
+				br.set_cookie(cookie)
+			br.open(url)
 			color.log(logging.INFO, color.GREEN, 'Finding all the links of the website ' + str(url))
 			for link in br.links():		#finding the links of the website
 				if smallurl in str(link.absolute_url):
@@ -118,7 +128,6 @@ def initializeAndFind():
 
 def findxss(firstDomains):
 	color.log(logging.INFO, color.GREEN, 'Started finding XSS')	#starting finding XSS
-	xssLinks = []			#TOTAL CROSS SITE SCRIPTING FINDINGS
 	if firstDomains:	#if there is atleast one link
 		for link in firstDomains:
 			blacklisted = False
