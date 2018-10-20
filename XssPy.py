@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import mechanize
 import sys
 import httplib
