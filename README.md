@@ -17,6 +17,9 @@ Type the following in the terminal.
 
 The tool works on Python 2.7 and you should have mechanize installed. If mechanize is not installed, type "pip install mechanize" in the terminal.
 
+You will also need the mechanize distribution, you can install it with pip:
+```pip install mechanize```
+
 # Usage: 
 `python XssPy.py website.com` (Do not write www.website.com OR http://www.website.com)
 
