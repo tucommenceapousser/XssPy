@@ -23,6 +23,19 @@ You will also need the mechanize distribution, you can install it with pip:
 # Usage: 
 `python XssPy.py website.com` (Do not write www.website.com OR http://www.website.com)
 
+# Docker
+Advantage of Docker is that is will run on every machine. You don't need to install Pip packages or use a Venv.
+Package versions are pinned. This ensures that XssPy will also run in the future. Regardless which Python-Version you've running on you machine.
+## Docker build
+```
+docker build -ti xsspy .
+```
+## Docker usage
+After you build
+```
+docker run -ti xsspy website.com
+```
+
 # Payloads
 If you have found a XSS vulnerability, you can try the following payloads.
 http://pastebin.com/J1hCfL9J
