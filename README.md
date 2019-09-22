@@ -28,12 +28,12 @@ Advantage of Docker is that is will run on every machine. You don't need to inst
 Package versions are pinned. This ensures that XssPy will also run in the future. Regardless which Python-Version you've running on you machine.
 ## Docker build
 ```
-docker build -ti xsspy .
+docker build -t xsspy .
 ```
 ## Docker usage
 After you build
 ```
-docker run -ti xsspy website.com
+docker run -t xsspy -u website.com
 ```
 
 # Payloads
