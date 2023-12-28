@@ -2,7 +2,9 @@
 A tool by Fsecurify
 
 Author: Faizan Ahmad 
+
 Modder: Trhacknon
+
 https://pk.linkedin.com/in/faizan-ahmad-015964118
 
 # Great News: Xsspy was recently used by an engineer at microsoft to find a bug in Pentagon's Bug Bounty Program.
