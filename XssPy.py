@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import mechanize
 import sys
-import httplib
+import http.client
 import argparse
 import logging
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 br = mechanize.Browser()  # initiating the browser
 br.addheaders = [
@@ -33,7 +33,7 @@ class color:
         logger.log(lvl, col + msg + color.END)
 
 
-print color.BOLD + color.RED + """
+print(color.BOLD + color.RED + """
 XssPy - Finding XSS made easier
 Author: Faizan Ahmad (Fsecurify)
 Email: fsecurify@gmail.com
@@ -51,7 +51,7 @@ After that, it starts scanning each and every input on each and every
 payloads to search for XSS vulnerabilities. XSS in many high
 profile websites and educational institutes has been found
 by using this very tool.
-""" + color.END
+""" + color.END)
 
 logger = logging.getLogger(__name__)
 lh = logging.StreamHandler()  # Handler for the logger
@@ -105,7 +105,7 @@ def initializeAndFind():
     # Test HTTPS/HTTP compatibility. Prefers HTTPS but defaults to
     # HTTP if any errors are encountered
         try:
-            test = httplib.HTTPSConnection(smallurl)
+            test = http.client.HTTPSConnection(smallurl)
             test.request("GET", "/")
             response = test.getresponse()
             if (response.status == 200) | (response.status == 302):
