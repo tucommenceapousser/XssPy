@@ -2,6 +2,7 @@
 A tool by Fsecurify
 
 Author: Faizan Ahmad 
+Modder: Trhacknon
 https://pk.linkedin.com/in/faizan-ahmad-015964118
 
 # Great News: Xsspy was recently used by an engineer at microsoft to find a bug in Pentagon's Bug Bounty Program.
@@ -13,7 +14,7 @@ http://fsecurify.com/xsspy-web-application-xss-scanner/
 # Installation: 
 Type the following in the terminal.
 
-`git clone https://github.com/faizann24/XssPy/` /opt/xsspy
+`git clone https://github.com/tucommenceapousser/XssPy/` /opt/xsspy
 
 The tool works on Python 2.7 and you should have mechanize installed. If mechanize is not installed, type "pip install mechanize" in the terminal.
 
